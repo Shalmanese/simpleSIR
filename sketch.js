@@ -72,6 +72,8 @@ function resetSim(){
 	agents[1].infect();
 	agents[2].infect();
 	agents[3].infect();
+	agents[0].iDays = random(100);
+	agents[1].iDays = random(100);
 	
 }
 function draw() {
@@ -91,9 +93,9 @@ function draw() {
 
 function infect(agents) {
 	agents.forEach(function(a){a.move(canvasSize,canvasSize)});
-	var threshold = 10;
+	var threshold = 20;
 	for(var i = 0; i < agents.length; i++) {
-		if (agents[i].status == "infected"){
+		if (agents[i].status == "infected" && agents[i].iDays < 70){
 			for(var j = 0; j < agents.length; j++) {
 				if (agents[j].status == "uninfected" && idist(agents[i],agents[j]) < threshold)
 					agents[j].infect();
