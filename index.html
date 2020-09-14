@@ -4,12 +4,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>p5.js example</title>
+  <title>Simple SIR Model</title>
   <style>
     body {
       padding: 0;
       margin: 0;
     }
+	.wrapper {
+		display:flex;
+	}
+	#playarea {
+		border: 3px solid gray;
+		margin: 20px;
+		padding: 10px;
+	}
+	#grapharea {
+		border: 3px solid darkblue;
+		margin: 20px;
+		padding: 10px;
+	}
   </style>
   <script src="p5.js"></script>
   <!-- <script src="../addons/p5.sound.min.js"></script> -->
@@ -18,15 +31,24 @@
 
 <body>
   <main>
-	  <p>Simple SIR model:</p>
-	  <button onclick="startSketch();">
-	      Start</button>
-	  <button onclick="stopSketch();">
-	      Stop</button>
-	  <button onclick="resetSketch();">
-	      Reset</button>
-	  <button onclick="runSketch();">
-	      Complete Run</button>
+	<p>Simple SIR model:</p>
+	<div class="wrapper">
+		<div id="playarea"></div>
+		<div id="grapharea"></div>
+	</div>
+	<br/>
+	<div class="wrapper">
+	  
+		  <button onclick="startSketch();">
+		      Start</button>
+		  <button onclick="stopSketch();">
+		      Stop</button>
+		  <button onclick="resetSketch();">
+		      Reset</button>
+		  <button onclick="runSketch();">
+		      Complete Run</button>
+	</div>
+		  
   </main>
 </body>
 
