@@ -48,7 +48,12 @@ var grapharea = function (p) {
 
 	p.draw = function() {
 		p.setupGraph();
-	}	
+	}
+	
+	p.reset = function () {
+		p.clear();
+		p.setupGraph();
+	}
 	
 	p.setupGraph = function() {
 		p.stroke(0);
@@ -160,5 +165,10 @@ function runSketch(){
 	p5play.resetSim();
 	for(var i = 0; i < 1200; i++) {
 		p5play.infect(agents);
-	}	
+	}
+}
+
+function clearGraph(){
+	p5play.resetSim();
+	p5graph.reset();
 }
