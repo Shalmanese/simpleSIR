@@ -67,7 +67,7 @@ var grapharea = function (p) {
 	
 	p.reset = function () {
 		p.clear();
-		p.resizeCanvas(gvar.canvasSize, gvar.canvasSize)
+		p.resizeCanvas(1200, gvar.canvasSize)
 		p.setupGraph();
 	}
 	
@@ -217,6 +217,13 @@ function runSketch(){
 	}
 }
 
+function run50Sketch(){
+	for(var i = 0; i < 100; i++) {
+		runSketch();
+		p5graph.draw();
+	}
+}
+
 function clearGraph(){
 	p5play.resetSim();
 	p5graph.reset();
@@ -248,9 +255,11 @@ function adjustSliders(i, value, line){
 	}
 	else{
 		if (line.includes("%")){
+			d.min = 0;
 			d.max = 100;
 		}
 		else{
+			d.min = Math.pow(10, Math.floor(Math.log10(value + 1)));			
 			d.max = Math.pow(10, Math.ceil(Math.log10(value + 1)));			
 		}
 		d.setAttribute("value", value);
