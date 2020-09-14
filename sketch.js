@@ -39,6 +39,18 @@ var infectionChance = 0.20;
 var numAgents = 200;
 var gHistory = [];
 
+class Adjustables{
+	canvasSize;
+	numAgents;
+	numSickAgents;
+	sneezeRadius;
+	sneezeDuration;
+	sneezeFrequency;
+	sneezeInfectiousness;
+}
+
+var gvar = new Adjustables();
+
 var grapharea = function (p) {
 
 	p.setup = function() {
@@ -174,7 +186,6 @@ function createSliders(n){
 function sliderChanged(e){
 	var lineno = parseInt(e.target.id.replace("slideAdjust", ""))
 	var value = e.target.value;
-	console.log("slider changed!" + lineno + value)
 	var text = document.getElementById("scriptText").value;
 	var lines = text.split("\n");
 	lines[lineno] = lines[lineno].replace(/<.*>/, "<" + value + ">");
@@ -206,27 +217,41 @@ function clearGraph(){
 }
 
 function scriptUpdated(){
+	var changed = false;
 	var text = document.getElementById("scriptText").value;
 	var lines = text.split("\n");
 	for(var i = 0; i < lines.length; i++) {
-		var d = document.getElementById("slideAdjust" + i);
-		var re = new RegExp("<.*>");
-		var res = re.exec(lines[i]);
+		var res = new RegExp("<.*>").exec(lines[i]);
+		var value = NaN;
 		if (res){
-			var value = parseInt(res[0].substring(1, res[0].length - 1));
-			if (value){
-				d.max = Math.pow(10, Math.ceil(Math.log10(value)));
-				d.setAttribute("value", value);
-				d.style.cssText = "visibility:visible;"				
-			}
-			else{
-				d.style.cssText = "visibility:hidden;"								
-			}
+			value = parseInt(res[0].substring(1, res[0].length - 1));
+		}
+		adjustSliders(i, value, lines[i]);
+		changed = changed || bindVar(value, lines[i]);
+	}
+	if (changed){
+		resetSim();
+	}
+}
+
+function adjustSliders(i, value, line){
+	var d = document.getElementById("slideAdjust" + i);
+	if (isNaN(value)){
+			d.style.cssText = "visibility:hidden;"
+	}
+	else{
+		if (line.includes("%")){
+			d.max = 100;
 		}
 		else{
-			d.style.cssText = "visibility:hidden;"								
+			d.max = Math.pow(10, Math.ceil(Math.log10(value + 1)));			
 		}
+		d.setAttribute("value", value);
+		d.style.cssText = "visibility:visible;"				
 	}
 	
-	console.log(text);
+}
+
+function bindVar(value, line){
+	
 }
