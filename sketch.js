@@ -153,6 +153,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 	var p5graph = new p5(grapharea, 'grapharea');
 
 	createSliders(30);
+	scriptUpdated();
 })
 
 function createSliders(n){
@@ -163,12 +164,23 @@ function createSliders(n){
 		s.min = 0;
 		s.className = "slider";
 		s.id = "slideAdjust" + i;
-		s.style.cssText = "visibility:hidden;"
+		s.style.cssText = "visibility:hidden;";
+		s.addEventListener("input", sliderChanged);
 		d.appendChild(s);
 	}
 
 }
 
+function sliderChanged(e){
+	var lineno = parseInt(e.target.id.replace("slideAdjust", ""))
+	var value = e.target.value;
+	console.log("slider changed!" + lineno + value)
+	var text = document.getElementById("scriptText").value;
+	var lines = text.split("\n");
+	lines[lineno] = lines[lineno].replace(/<.*>/, "<" + value + ">");
+	var text = lines.join("\n");
+	document.getElementById("scriptText").value = text;
+}
 function startSketch(){
 	status = "start";
 }
@@ -197,13 +209,23 @@ function scriptUpdated(){
 	var text = document.getElementById("scriptText").value;
 	var lines = text.split("\n");
 	for(var i = 0; i < lines.length; i++) {
-		var s = document.createElement('input');
-		s.type = "range";
-		s.min = 0;
-		s.className = "slider";
-		s.id = "slideAdjust" + i;
-		s.style.cssText = "visibility:hidden;"
-		d.appendChild(s);
+		var d = document.getElementById("slideAdjust" + i);
+		var re = new RegExp("<.*>");
+		var res = re.exec(lines[i]);
+		if (res){
+			var value = parseInt(res[0].substring(1, res[0].length - 1));
+			if (value){
+				d.max = Math.pow(10, Math.ceil(Math.log10(value)));
+				d.setAttribute("value", value);
+				d.style.cssText = "visibility:visible;"				
+			}
+			else{
+				d.style.cssText = "visibility:hidden;"								
+			}
+		}
+		else{
+			d.style.cssText = "visibility:hidden;"								
+		}
 	}
 	
 	console.log(text);
