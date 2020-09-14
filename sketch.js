@@ -172,3 +172,8 @@ function clearGraph(){
 	p5play.resetSim();
 	p5graph.reset();
 }
+
+function scriptUpdated(){
+	var text = document.getElementById("scriptText").value;
+	console.log(text);
+}
