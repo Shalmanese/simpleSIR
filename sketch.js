@@ -146,8 +146,28 @@ var playarea = function (p) {
 	}
 }
 
-var p5play = new p5(playarea, 'playarea');
-var p5graph = new p5(grapharea, 'grapharea');
+// Init
+
+document.addEventListener('DOMContentLoaded', (event) => {
+	var p5play = new p5(playarea, 'playarea');
+	var p5graph = new p5(grapharea, 'grapharea');
+
+	createSliders(30);
+})
+
+function createSliders(n){
+	var d = document.getElementById("scriptAdjust");
+	for(var i = 0; i < n; i++) {
+		var s = document.createElement('input');
+		s.type = "range";
+		s.min = 0;
+		s.className = "slider";
+		s.id = "slideAdjust" + i;
+		s.style.cssText = "visibility:hidden;"
+		d.appendChild(s);
+	}
+
+}
 
 function startSketch(){
 	status = "start";
@@ -175,5 +195,16 @@ function clearGraph(){
 
 function scriptUpdated(){
 	var text = document.getElementById("scriptText").value;
+	var lines = text.split("\n");
+	for(var i = 0; i < lines.length; i++) {
+		var s = document.createElement('input');
+		s.type = "range";
+		s.min = 0;
+		s.className = "slider";
+		s.id = "slideAdjust" + i;
+		s.style.cssText = "visibility:hidden;"
+		d.appendChild(s);
+	}
+	
 	console.log(text);
 }
