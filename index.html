@@ -55,10 +55,11 @@
   <main>
 	<p>Simple SIR model:</p>
 	<div class="wrapper">
-		<textarea id="scriptText" oninput="scriptUpdated()" rows="20" cols = "80">new Canvas size:<400>
-add People quantity:<500>
+		<textarea id="scriptText" oninput="scriptUpdated()" rows="20" cols = "80">new World size:<400>
+add People quantity:<200>
 adjust People WhenSick <0>%
 People Behavior Random_Walk
+Random_Walk speed:<1>
 People Behavior WhenSick Sneeze
 Sneeze radius:<10>
 Sneeze duration:<10>
@@ -69,7 +70,7 @@ Plane frequency:<10>
 Plane quantity:<5>
 adjust Plane WhenSick <5>%
 atTime <100> add Intervention TravelBan
-TravelBan adjust Plane quantity <2>
+TravelBan adjust Plane frequency <2>
 </textarea>
 	<div id="scriptAdjust">
 	</div>

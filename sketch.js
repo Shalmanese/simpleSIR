@@ -32,7 +32,6 @@ class Agent {
 	}
 }
 
-var canvasSize = 400;
 var agents = [];
 var status = "stop";
 var infectionChance = 0.20;
@@ -40,9 +39,11 @@ var numAgents = 200;
 var gHistory = [];
 
 class Adjustables{
+	changed;
 	canvasSize;
 	numAgents;
-	numSickAgents;
+	pSickAgents;
+	walkSpeed;
 	sneezeRadius;
 	sneezeDuration;
 	sneezeFrequency;
@@ -50,11 +51,13 @@ class Adjustables{
 }
 
 var gvar = new Adjustables();
+gvar.canvasSize = 400;
+gvar.numAgents = 500;
 
 var grapharea = function (p) {
 
 	p.setup = function() {
-		p.createCanvas(1000, canvasSize);
+		p.createCanvas(1200, gvar.canvasSize);
 		p.setupGraph();
 	}
 
@@ -64,37 +67,39 @@ var grapharea = function (p) {
 	
 	p.reset = function () {
 		p.clear();
+		p.resizeCanvas(gvar.canvasSize, gvar.canvasSize)
 		p.setupGraph();
 	}
 	
 	p.setupGraph = function() {
 		p.stroke(0);
 		p.strokeWeight(2);
-		p.line (0, 0, 0, canvasSize);
+		p.line (0, 0, 0, gvar.canvasSize);
 		p.strokeWeight(3);
-		p.line (0, canvasSize, 1200, canvasSize);
+		p.line (0, gvar.canvasSize, 1200, gvar.canvasSize);
 		p.strokeWeight(1);
 		for(var i = 1; i < gHistory.length; i++) {
 			p.stroke(255, 0, 0);
-			p.line(0+i-1, canvasSize-gHistory[i-1][0]*(canvasSize/numAgents), 0+i, canvasSize-gHistory[i][0]*(canvasSize/numAgents));
+			p.line(0+i-1, gvar.canvasSize-gHistory[i-1][0]*(gvar.canvasSize/gvar.numAgents), 0+i, gvar.canvasSize-gHistory[i][0]*(gvar.canvasSize/gvar.numAgents));
 			p.stroke(0, 255, 0);
-			p.line(0+i-1, canvasSize-gHistory[i-1][1]*(canvasSize/numAgents), 0+i, canvasSize-gHistory[i][1]*(canvasSize/numAgents));
+			p.line(0+i-1, gvar.canvasSize-gHistory[i-1][1]*(gvar.canvasSize/gvar.numAgents), 0+i, gvar.canvasSize-gHistory[i][1]*(gvar.canvasSize/gvar.numAgents));
 			p.stroke(0, 0, 128);
-			p.line(0+i-1, canvasSize-gHistory[i-1][2]*(canvasSize/numAgents), 0+i, canvasSize-gHistory[i][2]*(canvasSize/numAgents));
+			p.line(0+i-1, gvar.canvasSize-gHistory[i-1][2]*(gvar.canvasSize/gvar.numAgents), 0+i, gvar.canvasSize-gHistory[i][2]*(gvar.canvasSize/gvar.numAgents));
 		}
 	}
 }
 var playarea = function (p) {	
 	p.setup = function() {
-		p.createCanvas(canvasSize, canvasSize);
+		p.createCanvas(gvar.canvasSize, gvar.canvasSize);
 		p.resetSim();
 	}
 
 	p.resetSim = function(){
+		p.resizeCanvas(gvar.canvasSize, gvar.canvasSize)
 		agents = [];
 		gHistory = [];
-		for(var i = 0; i < numAgents; i++) {
-			agents.push(new Agent(p.random(canvasSize), p.random(canvasSize), p.random(p.PI)));
+		for(var i = 0; i < gvar.numAgents; i++) {
+			agents.push(new Agent(p.random(gvar.canvasSize), p.random(gvar.canvasSize), p.random(p.PI)));
 		}
 		agents[0].infect();
 		agents[1].infect();
@@ -114,7 +119,7 @@ var playarea = function (p) {
 	}
 
 	p.infect = function(agents) {
-		agents.forEach(function(a){a.move(canvasSize,canvasSize)});
+		agents.forEach(function(a){a.move(gvar.canvasSize,gvar.canvasSize)});
 		var threshold = 20;
 		for(var i = 0; i < agents.length; i++) {
 			if (agents[i].status == "infected" && agents[i].iDays < 70){
@@ -159,10 +164,10 @@ var playarea = function (p) {
 }
 
 // Init
+var p5play = new p5(playarea, 'playarea');
+var p5graph = new p5(grapharea, 'grapharea');
 
 document.addEventListener('DOMContentLoaded', (event) => {
-	var p5play = new p5(playarea, 'playarea');
-	var p5graph = new p5(grapharea, 'grapharea');
 
 	createSliders(30);
 	scriptUpdated();
@@ -191,6 +196,7 @@ function sliderChanged(e){
 	lines[lineno] = lines[lineno].replace(/<.*>/, "<" + value + ">");
 	var text = lines.join("\n");
 	document.getElementById("scriptText").value = text;
+	scriptUpdated();
 }
 function startSketch(){
 	status = "start";
@@ -230,7 +236,8 @@ function scriptUpdated(){
 		changed = changed || bindVar(value, lines[i]);
 	}
 	if (changed){
-		resetSim();
+		p5play.resetSim();
+		p5graph.reset();
 	}
 }
 
@@ -253,5 +260,18 @@ function adjustSliders(i, value, line){
 }
 
 function bindVar(value, line){
+	gvar.changed = false;
+	if (line.includes("new World size")){
+		if (gvar.canvasSize != value)
+			gvar.changed = true;
+		gvar.canvasSize = value;
+	}
+	if (line.includes("add People quantity")){
+		if (gvar.numAgents != value)
+			gvar.changed = true;
+		gvar.numAgents = value;
+	}
+	
+	return gvar.changed;
 	
 }
