@@ -218,10 +218,11 @@ function runSketch(){
 }
 
 function run50Sketch(){
-	for(var i = 0; i < 100; i++) {
+	for(var i = 0; i < 50; i++) {
 		runSketch();
 		p5graph.draw();
 	}
+	//alert("done");
 }
 
 function clearGraph(){
