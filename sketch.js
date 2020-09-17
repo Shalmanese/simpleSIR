@@ -251,20 +251,22 @@ function scriptUpdated(){
 
 function adjustSliders(i, value, line){
 	var d = document.getElementById("slideAdjust" + i);
-	if (isNaN(value)){
-			d.style.cssText = "visibility:hidden;"
-	}
-	else{
-		if (line.includes("%")){
-			d.min = 0;
-			d.max = 100;
+	if (d){
+		if (isNaN(value)){
+				d.style.cssText = "visibility:hidden;"
 		}
 		else{
-			d.min = Math.pow(10, Math.floor(Math.log10(value + 1)));			
-			d.max = Math.pow(10, Math.ceil(Math.log10(value + 1)));			
+			if (line.includes("%")){
+				d.min = 0;
+				d.max = 100;
+			}
+			else{
+				d.min = Math.pow(10, Math.floor(Math.log10(value + 1)));			
+				d.max = Math.pow(10, Math.ceil(Math.log10(value + 1)));			
+			}
+			d.setAttribute("value", value);
+			d.style.cssText = "visibility:visible;"				
 		}
-		d.setAttribute("value", value);
-		d.style.cssText = "visibility:visible;"				
 	}
 	
 }
