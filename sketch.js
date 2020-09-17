@@ -261,6 +261,7 @@ function adjustSliders(i, value, line){
 				d.max = 100;
 			}
 			else{
+				console.log("this is changed")
 				d.min = Math.pow(10, Math.floor(Math.log10(value + 1)));			
 				d.max = Math.pow(10, Math.ceil(Math.log10(value + 1)));			
 			}
