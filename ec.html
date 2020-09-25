@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/d3.v6.min.js"></script>
 <style type="text/css">
 
 /* On mouse hover, lighten state color */
@@ -58,20 +58,13 @@ var width = 960;
 var height = 500;
 
 // D3 Projection
-var projection = d3.geo.albersUsa()
+var projection = d3.geoAlbersUsa()
 				   .translate([width/2, height/2])    // translate to center of screen
 				   .scale([1000]);          // scale things down so see entire US
         
 // Define path generator
-var path = d3.geo.path()               // path generator that will convert GeoJSON to SVG paths
+var path = d3.geoPath()               // path generator that will convert GeoJSON to SVG paths
 		  	 .projection(projection);  // tell path generator to use albersUsa projection
-
-		
-// Define linear scale for output
-var color = d3.scale.linear()
-			  .range(["rgb(213,222,217)","rgb(69,173,168)","rgb(84,36,55)","rgb(217,91,67)"]);
-
-var legendText = ["Cities Lived", "States Lived", "States Visited", "Nada"];
 
 //Create SVG element and append map to the SVG
 var svg = d3.select("body")
@@ -80,20 +73,18 @@ var svg = d3.select("body")
 			.attr("height", height);
         
 // Append Div for tooltip to SVG
-var div = d3.select("body")
+var tooltip = d3.select("body")
 		    .append("div")   
     		.attr("class", "tooltip")               
     		.style("opacity", 0);
 
-// Load in my states data!
-color.domain([0,1,2,3]); // setting the range of the input data
+d3.tsv("1976-2016-president.tab").then(function(data) {
+	const dems2016 = data.filter(d => d.year === "2016" && d.party === "democrat");
+	const pubs2016 = data.filter(d => d.year === "2016" && d.party === "republican");
+	console.log(dems2016.length + " " + pubs2016.length);
 
-d3.tsv("1976-2016-president.tab", function(data) {
-  var dems2016 = data.filter(d => d.year === "2016" && d.party === "democrat");
-  var pubs2016 = data.filter(d => d.year === "2016" && d.party === "republican");
-  console.log(dems2016.length + " " + pubs2016.length);
 // Load GeoJSON data and merge with states data
-d3.json("us-states.json", function(json) {
+d3.json("us-states.json").then(function(json) {
 
 		
 // Bind the data to the SVG and create one path per GeoJSON feature
@@ -112,31 +103,33 @@ svg.selectAll("path")
 		   perc = parseInt(dn.candidatevotes) / (parseInt(dn.candidatevotes) + parseInt(rn.candidatevotes));
 	   }
 			   return d3.interpolateRgb("red", "blue")(perc)})
-	.on("mouseover", function(d) {      
-    	div.transition()        
-      	   .duration(200)      
-           .style("opacity", .9);      
-           div.text(function(dd){ 
-			   let dn = dems2016.find(e => e.state == d.properties.name);
-			   let rn = pubs2016.find(e => e.state == d.properties.name);
-			   let perc = parseInt(dn.candidatevotes) * 100 / (parseInt(dn.candidatevotes) + parseInt(rn.candidatevotes));
-			   return d.properties.name + " " + perc.toFixed(2)})
-           .style("left", (d3.event.pageX) + "px")     
-           .style("top", (d3.event.pageY - 28) + "px");    
+	.on("mouseover", function(e, target) {
+		let sname = target.properties.name;
+    	tooltip.transition()
+    	       .duration(200)
+    	       .style("opacity", .9);
+    	// tooltip.text(target.properties.name)
+    	tooltip.text(function(abc){
+    		let dn = dems2016.find(e => e.state == target.properties.name);
+    		let rn = pubs2016.find(e => e.state == target.properties.name);
+    		let perc = parseInt(dn.candidatevotes) * 100 / (parseInt(dn.candidatevotes) + parseInt(rn.candidatevotes));
+    		return target.properties.name + " " + perc.toFixed(2)})
+    	    .style("left", (d3.pointer(e)[0]) + "px")
+    	    .style("top", (d3.pointer(e)[1] - 28) + "px");
 	})   
     // fade out tooltip on mouse out               
     .on("mouseout", function(d) {       
-        div.transition()        
+        tooltip.transition()        
            .duration(500)      
            .style("opacity", 0);   
-});
 
 });
 
 
+});
         
 
-	});
+});
 
 
 </script>
